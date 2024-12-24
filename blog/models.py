@@ -3,10 +3,18 @@ from django.utils import timezone
 from django.conf import settings
 
 # Create your models here.
+
+class PublishedManager(models.Manager):
+    def get_queryset(self):
+        return (super().get_queryset().filter(status=Post.Status.PUBLISHED))
+
 class Post (models.Model):
     class Status(models.TextChoices):
         DRAFT = 'DR', 'Draft'
         PUBLISHED = 'PB', 'Published'
+
+    objects = models.Manager()
+    published = PublishedManager()
 
     title = models.CharField(max_length=50)
     slug = models.SlugField(max_length=100)
