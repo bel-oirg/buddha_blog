@@ -1,4 +1,4 @@
-{% extend "blog/base.html" %}
+{% extends "blog/base.html" %}
 
 {%block title%}Share a post{%endblock%}
 
@@ -6,7 +6,7 @@
     {%if sent%}
         <h1>Email sent successfuly</h1>
     {% else %}
-        <h1> share "{{blog.title}}" by email </h1>
+        <h1> share "{{ post.title }}" by email </h1>
         <form method="post">
             {{form.as_p}}
             {% csrf_token %}

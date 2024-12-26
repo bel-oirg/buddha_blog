@@ -7,7 +7,7 @@
     <p class="date"> Published {{posta.publish}} by {{posta.author}} </p>
     {{posta.body | linebreaks}}
     <p>
-        <a href="{% url "blog:post_share" post_id %}">
+        <a href="{% url "blog:post_share" posta.id %}">
             Share This post
         </a>
     </p>
