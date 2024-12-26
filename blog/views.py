@@ -69,3 +69,18 @@ def post_share(request, post_id):
     return (render(request,
                    'blog/post/share.html',
                    {'post': post,'form':form, 'sent': sent}))
+
+from django.views.decorators.http import require_POST
+from .forms import CommentForm
+
+@require_POST
+def post_comment(request, post_id):
+    post = get_object_or_404(request, id=post_id, status=Post.Status.PUBLISHED)
+    comment = None
+    form = CommentForm(data=request.POST)
+    if (form.is_valid()):
+        comment = form.save(commit=False) #to not save it to database directyl, cause we will modify here on the post before submitting here
+        comment.post = post
+        comment.save() #saved to the db
+    return (render(request, 'blog/post/comment.html', {'post':post, 'comment':comment, 'form':form}))
+

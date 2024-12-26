@@ -52,7 +52,7 @@ class Comment(models.Model):
     )
     name = models.CharField(max_length=30)
     email = models.EmailField()
-    body = models.models.TextField()
+    body = models.TextField()
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     active = models.BooleanField(default=True)
