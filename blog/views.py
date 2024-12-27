@@ -1,11 +1,8 @@
 from django.shortcuts import render, get_object_or_404
 from .models import Post
-# from django.http import Http404
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
-# Create your views here.
-
-#some exception could be used EmptyPage, PageNotAnInteger
-
+from django.views.decorators.http import require_POST
+from .forms import CommentForm, EmailPostForm
 from django.views.generic import ListView
 
 class PostListView(ListView):
@@ -43,9 +40,8 @@ def post_detail(request, year, month, day, post):
 
     return (render(request,
                    'blog/post/detail.html',
-                   {'posta':post, 'comments':comments, 'form':form}))
+                   {'post':post, 'comments':comments, 'form':form}))
 
-from .forms import EmailPostForm
 # from django.core.mail import send_mail
 
 def post_share(request, post_id):
@@ -71,20 +67,19 @@ def post_share(request, post_id):
                    'blog/post/share.html',
                    {'post': post,'form':form, 'sent': sent}))
 
-from django.views.decorators.http import require_POST
-from .forms import CommentForm
+
 
 @require_POST
 def post_comment(request, post_id):
     post = get_object_or_404(Post,
                              id=post_id,
                              status=Post.Status.PUBLISHED)
-    comments = None
+    comment = None
     form = CommentForm(data=request.POST)
     if (form.is_valid()):
-        comments = form.save(commit=False) #to not save it to database directyl, cause we will modify here on the post before submitting here
-        comments.post = post
-        comments.save() #saved to the db
+        comment = form.save(commit=False) #to not save it to database directly, cause we will modify here on the post before submitting here
+        comment.post = post
+        comment.save() #saved to the db
     return (render(request,
                    'blog/post/comment.html',
-                   {'post':post, 'form':form, 'comments':comments}))
+                   {'post':post, 'form':form, 'comment':comment}))
