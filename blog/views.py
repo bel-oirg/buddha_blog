@@ -38,11 +38,12 @@ def post_detail(request, year, month, day, post):
                               publish__day=day,
                               slug=post,
                               status=Post.Status.PUBLISHED)
-    # try:
-    #     post = Post.published.get(id=id)
-    # except:
-    #     raise Http404("Post not found")
-    return (render(request, 'blog/post/detail.html', {'posta':post}))
+    comments = post.comments.filter(active=True)
+    form = CommentForm()
+
+    return (render(request,
+                   'blog/post/detail.html',
+                   {'posta':post, 'comments':comments, 'form':form}))
 
 from .forms import EmailPostForm
 # from django.core.mail import send_mail
@@ -75,12 +76,15 @@ from .forms import CommentForm
 
 @require_POST
 def post_comment(request, post_id):
-    post = get_object_or_404(request, id=post_id, status=Post.Status.PUBLISHED)
-    comment = None
+    post = get_object_or_404(Post,
+                             id=post_id,
+                             status=Post.Status.PUBLISHED)
+    comments = None
     form = CommentForm(data=request.POST)
     if (form.is_valid()):
-        comment = form.save(commit=False) #to not save it to database directyl, cause we will modify here on the post before submitting here
-        comment.post = post
-        comment.save() #saved to the db
-    return (render(request, 'blog/post/comment.html', {'post':post, 'comment':comment, 'form':form}))
-
+        comments = form.save(commit=False) #to not save it to database directyl, cause we will modify here on the post before submitting here
+        comments.post = post
+        comments.save() #saved to the db
+    return (render(request,
+                   'blog/post/comment.html',
+                   {'post':post, 'form':form, 'comments':comments}))

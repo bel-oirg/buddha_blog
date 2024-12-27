@@ -11,4 +11,22 @@
             Share This post
         </a>
     </p>
-{%endblock%}
+    {% with comments.count as comment_max%}
+        <h2>
+            {{comment_max}} comment{{ comment_max|pluralize }}
+        </h2>
+    {% endwith %}
+
+    {% for com in comments%}
+        <div class="comment">
+            <p class="info">
+                Comment {{forloop.counter}} by {{com.name}}
+                {{com.created}}
+            </p>
+            {{com.body|linebreaks}}
+        </div>
+    {% empty %}
+        <p>No comments.</p>
+    {% endfor %}
+    {% include "blog/post/includes/comment_form.html"%}
+{% endblock %}
